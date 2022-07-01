@@ -1,31 +1,29 @@
 import sqlite3
+import os
 from time import sleep
-
 from telebot import TeleBot, types
-
 from dbhelper import DBHelper
 from filter import bind_filters
 from filter import catalogs_factory, add_products_factory, delete_products_factory, remove_products_factory
-
 from keyboards import general_markup, catalog_markup, product_in_basket_markup, add_product_markup, \
     confirm_basket_markup, last_order_markup, phone_markup
-
 from flask import Flask, request, abort
+from dotenv import load_dotenv
 
-BOT_TOKEN = '5435760839:AAFCQAlty8W-Km6x-56vjjT5CPw9AEHDzcg'
+load_dotenv()  # take environment variables from .env.
+
+BOT_TOKEN = os.getenv("BOT_TOKEN")
 bot = TeleBot(BOT_TOKEN, threaded=False)
 
-# Do not forget to change username!
-URL = "https://1822319.pythonanywhere.com/"
-SECRET = '646f3ba8-7073-43de-ba41-ecc73250cbfd'
+URL = os.getenv("URL")
+SECRET = os.getenv("SECRET")
 url = URL + SECRET
 
 # Remove webhook, it fails sometimes the set if there is a previous webhook.
 bot.remove_webhook()
 sleep(0.1)
-bot.set_webhook(url=url)  # ,max_connections=1 ?
+bot.set_webhook(url=url)
 
-# Перед перезагрузкой приложения удалить файл базы данных!
 app = Flask(__name__)
 
 bind_filters(bot)
@@ -54,7 +52,7 @@ def telegram_webhook():
 # Empty webserver index, return nothing, just http 200.
 @app.route('/')
 def index():
-    return '<h1>1822319</h1>'
+    return '<h1>Telegram: @ChatBurgerBot</h1>'
 
 
 # Обработчик колбэков кнопок каталога.
